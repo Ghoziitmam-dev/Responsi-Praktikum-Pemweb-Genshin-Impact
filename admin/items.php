@@ -1,101 +1,100 @@
 <?php
+// admin/items.php
 session_start();
-if ($_SESSION['role'] != 'admin') {
-    header("Location: ../index.php");
-    exit;
-}
+require_once 'auth_check.php'; // Proteksi admin
 require_once '../config/config.php';
 
-// Inisialisasi form
-$edit_id = '';
-$edit_name = '';
-$edit_type = '';
-$edit_rarity = '';
+// 1. Logika Tambah Item
+if (isset($_POST['tambah_btn'])) {
+    $item_name   = $_POST['item_name'];
+    $item_type   = $_POST['item_type'];
+    $rarity      = $_POST['rarity'];
+    $drop_rate   = $_POST['drop_rate'];
+    $image       = $_POST['image'];
+    $description = $_POST['description'];
 
-// Hapus Item
+    $stmt = $conn->prepare("INSERT INTO items (item_name, item_type, rarity, drop_rate, image, description) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("ssidds", $item_name, $item_type, $rarity, $drop_rate, $image, $description);
+    
+    if ($stmt->execute()) {
+        echo "<script>alert('Item berhasil ditambahkan!'); window.location='items.php';</script>";
+    }
+    $stmt->close();
+}
+
+// 2. Logika Hapus Item
 if (isset($_GET['delete'])) {
+    $id = $_GET['delete'];
     $stmt = $conn->prepare("DELETE FROM items WHERE id = ?");
-    $stmt->bind_param("i", $_GET['delete']);
+    $stmt->bind_param("i", $id);
     $stmt->execute();
     header("Location: items.php");
     exit;
 }
-
-// Simpan/Update Item
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $name = $_POST['name'];
-    $type = $_POST['type'];
-    $rarity = $_POST['rarity'];
-    $id = $_POST['id'];
-
-    if (empty($id)) {
-        $stmt = $conn->prepare("INSERT INTO items (name, type, rarity) VALUES (?, ?, ?)");
-        $stmt->bind_param("sss", $name, $type, $rarity);
-    } else {
-        $stmt = $conn->prepare("UPDATE items SET name=?, type=?, rarity=? WHERE id=?");
-        $stmt->bind_param("sssi", $name, $type, $rarity, $id);
-    }
-    $stmt->execute();
-    header("Location: items.php");
-    exit;
-}
-
-// Ambil data edit
-if (isset($_GET['edit'])) {
-    $stmt = $conn->prepare("SELECT * FROM items WHERE id = ?");
-    $stmt->bind_param("i", $_GET['edit']);
-    $stmt->execute();
-    $data = $stmt->get_result()->fetch_assoc();
-    if ($data) {
-        $edit_id = $data['id'];
-        $edit_name = $data['name'];
-        $edit_type = $data['type'];
-        $edit_rarity = $data['rarity'];
-    }
-}
-
-$items = $conn->query("SELECT * FROM items ORDER BY id DESC");
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <title>Kelola Item (Gacha) - Admin</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <meta charset="UTF-8">
+    <title>Kelola Item & Senjata</title>
 </head>
 <body>
-    <h1>Kelola Item & Senjata</h1>
-    <nav><a href="dashbord.php">Kembali ke Dashboard</a></nav>
-    <hr>
 
-    <h3><?= empty($edit_id) ? 'Tambah' : 'Edit' ?> Item</h3>
-    <form method="POST">
-        <input type="hidden" name="id" value="<?= $edit_id ?>">
-        <label>Nama: <input type="text" name="name" value="<?= htmlspecialchars($edit_name) ?>" required></label><br><br>
-        <label>Tipe: <input type="text" name="type" value="<?= htmlspecialchars($edit_type) ?>" placeholder="Weapon/Artifact" required></label><br><br>
-        <label>Rarity: 
-            <select name="rarity">
-                <option value="Common" <?= $edit_rarity == 'Common' ? 'selected' : '' ?>>Common</option>
-                <option value="Epic" <?= $edit_rarity == 'Epic' ? 'selected' : '' ?>>Epic</option>
-                <option value="Legendary" <?= $edit_rarity == 'Legendary' ? 'selected' : '' ?>>Legendary</option>
-            </select>
-        </label><br><br>
-        <button type="submit">Simpan</button>
-        <?php if(!empty($edit_id)): ?> <a href="items.php">Batal Edit</a> <?php endif; ?>
+<h2>Kelola Item & Senjata</h2>
+<a href="dashboard.php">Kembali ke Dashboard</a>
+
+<section>
+    <h3>Tambah Item Baru</h3>
+    <form method="POST" action="">
+        <input type="text" name="item_name" placeholder="Nama Item" required>
+        <select name="item_type">
+            <option value="weapon">Weapon</option>
+            <option value="material">Material</option>
+        </select>
+        <input type="number" name="rarity" placeholder="Rarity (1-5)" min="1" max="5" required>
+        <input type="number" step="0.01" name="drop_rate" placeholder="Drop Rate" required>
+        <input type="text" name="image" placeholder="Nama File Gambar" required>
+        <textarea name="description" placeholder="Deskripsi"></textarea>
+        <button type="submit" name="tambah_btn">Simpan Item</button>
     </form>
-    <br>
+</section>
+<hr>
 
-    <table border="1" cellpadding="10" cellspacing="0">
-        <tr><th>ID</th><th>Nama</th><th>Tipe</th><th>Rarity</th><th>Aksi</th></tr>
-        <?php while ($row = $items->fetch_assoc()): ?>
-        <tr>
-            <td><?= $row['id'] ?></td>
-            <td><?= htmlspecialchars($row['name']) ?></td>
-            <td><?= htmlspecialchars($row['type']) ?></td>
-            <td><?= htmlspecialchars($row['rarity']) ?></td>
-            <td><a href="?edit=<?= $row['id'] ?>">Edit</a> | <a href="?delete=<?= $row['id'] ?>" onclick="return confirm('Yakin hapus?')">Hapus</a></td>
-        </tr>
-        <?php endwhile; ?>
-    </table>
+<table border="1" width="100%">
+    <tr>
+        <th>ID</th>
+        <th>Nama</th>
+        <th>Tipe</th>
+        <th>Rarity</th>
+        <th>Aksi</th>
+    </tr>
+    <?php
+    $query = "SELECT id, item_name, item_type, rarity FROM items";
+    $result = $conn->query($query);
+
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $id = $row['id'] ?? '';
+            $name = (string)($row['item_name'] ?? '');
+            $type = (string)($row['item_type'] ?? '');
+            $rarity = $row['rarity'] ?? '';
+            
+            echo "<tr>
+                <td>".htmlspecialchars($id)."</td>
+                <td>".htmlspecialchars($name)."</td>
+                <td>".htmlspecialchars($type)."</td>
+                <td>".htmlspecialchars($rarity)."</td>
+                <td>
+                    <a href='items.php?delete=".$id."' onclick='return confirm(\"Yakin hapus?\")'>Hapus</a>
+                </td>
+            </tr>";
+        }
+    } else {
+        echo "<tr><td colspan='5'>Data belum ada.</td></tr>";
+    }
+    ?>
+</table>
+
 </body>
 </html>

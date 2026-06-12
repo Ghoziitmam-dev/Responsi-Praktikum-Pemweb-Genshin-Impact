@@ -1,36 +1,36 @@
 <?php
 // LoginPage/login.php
 session_start();
-
-// Panggil file koneksi. Gunakan ../ untuk naik satu folder dari LoginPage
 require_once '../config/config.php';
 
 $error_message = "";
 
-// Jika tombol login ditekan
 if (isset($_POST['login_btn'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    // Gunakan Prepared Statement untuk mencegah celah keamanan SQL Injection
-    $stmt = $conn->prepare("SELECT id, username, password FROM users WHERE username = ?");
+    // 1. Tambahkan pengambilan kolom 'role' dari tabel users
+    $stmt = $conn->prepare("SELECT id, username, password, role FROM users WHERE username = ?");
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $result = $stmt->get_result();
 
-    // Jika username ditemukan di database
     if ($result->num_rows === 1) {
         $user = $result->fetch_assoc();
         
-        // Verifikasi kecocokan password yang diketik dengan hash di database
         if (password_verify($password, $user['password'])) {
-            // Login sukses, simpan data ke session
+            // Login sukses
             $_SESSION['user_logged_in'] = true;
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
+            $_SESSION['role'] = $user['role']; // Simpan role ke session
 
-            // Redirect ke halaman dashboard
-            header("Location: ../user/dashboard.php");
+            // 2. Logika Pemisahan Halaman (Redirect)
+            if ($user['role'] === 'admin') {
+                header("Location: ../admin/dashboard.php");
+            } else {
+                header("Location: ../user/dashboard.php");
+            }
             exit();
         } else {
             $error_message = "Password yang kamu masukkan salah!";
