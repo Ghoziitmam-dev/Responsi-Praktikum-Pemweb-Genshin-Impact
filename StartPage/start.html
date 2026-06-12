@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Genshin Impact - Start Page</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="background-game"></div>
+
+    <div class="konten-kiri">
+        <div class="teks-welcome">
+            <img src="../image/WelcomeTraveler.png" alt="Welcome Traveler">
+        </div>
+        <div class="tombol-start">
+            <button id="tombolPindah">
+                <img src="../image/ButtonStart.png" alt="Start Game">
+            </button>
+        </div>
+    </div>
+
+    <div class="gambar-navia">
+        <img src="../image/navia.png" alt="Navia">
+    </div>
+
+    <script>
+        var tombol = document.getElementById('tombolPindah');
+        tombol.onclick = function() {
+            window.location.href = '../LoginPage/login.php';
+        };
+    </script>
+
+</body>
+</html>

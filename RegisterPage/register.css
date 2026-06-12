@@ -1,0 +1,153 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #1a1b1d;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.background-game {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../image/StartBackground.jpg');
+    background-size: cover;
+    background-position: center;
+    z-index: -1;
+}
+
+.container-register {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 20px;
+}
+
+.kartu-register {
+    background: linear-gradient(to bottom, #000000 0%, #15110b 35%, #9b7e4f 100%);
+    border: 2px solid #cca462;
+    border-radius: 35px;
+    padding: 40px 35px;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
+}
+
+.wrapper-judul {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.gambar-judul {
+    max-height: 38px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+}
+
+.grup-input {
+    margin-bottom: 18px;
+}
+
+.grup-input label {
+    display: block;
+    font-size: 14px;
+    color: #cca462;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.kotak-input {
+    display: flex;
+    align-items: center;
+    background-color: rgba(40, 35, 28, 0.6);
+    border: 1px solid #7d6642;
+    border-radius: 30px;
+    padding: 10px 20px;
+    transition: all 0.3s ease;
+}
+
+.kotak-input:focus-within {
+    border-color: #dec287;
+    box-shadow: 0 0 8px rgba(204, 164, 98, 0.4);
+}
+
+.ikon-input {
+    width: 18px;
+    height: 18px;
+    fill: #cca462;
+    flex-shrink: 0;
+}
+
+.garis-pembatas {
+    width: 1px;
+    height: 18px;
+    background-color: #7d6642;
+    margin: 0 15px;
+}
+
+.kotak-input input {
+    background: none;
+    border: none;
+    outline: none;
+    color: #ebd197;
+    font-size: 14px;
+    width: 100%;
+}
+
+.kotak-input input::placeholder {
+    color: #7a705e;
+}
+
+.tombol-register {
+    width: 100%;
+    background: linear-gradient(to bottom, #ebd197, #b09156);
+    border: none;
+    border-radius: 30px;
+    padding: 12px;
+    color: #121212;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s, filter 0.2s;
+}
+
+.tombol-register:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+
+.tombol-register:active {
+    transform: translateY(1px);
+}
+
+.teks-bawah {
+    text-align: center;
+    font-size: 14px;
+    color: #1e170f;
+    margin-top: 30px;
+    font-weight: 500;
+}
+
+.teks-bawah a {
+    color: #121212;
+    text-decoration: none;
+    font-weight: bold;
+    margin-left: 3px;
+}
+
+.teks-bawah a:hover {
+    text-decoration: underline;
+}
