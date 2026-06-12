@@ -1,0 +1,83 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body, html {
+    width: 100%; height: 100%;
+    font-family: 'Segoe UI', sans-serif;
+    background: url('../image/StartBackground.png') no-repeat center fixed;
+    background-size: cover;
+    overflow-x: hidden;
+}
+
+.inventory-navbar {
+    width: 100%; height: 60px;
+    background: rgba(15, 15, 20, 0.85);
+    backdrop-filter: blur(5px);
+    border-bottom: 2px solid #edd6ad;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 40px;
+    position: fixed; top: 0; z-index: 100;
+}
+
+.back-btn {
+    color: #edd6ad; text-decoration: none; font-weight: bold;
+    font-size: 14px; display: flex; align-items: center; gap: 5px;
+}
+
+.nav-right { display: flex; flex-direction: column; text-align: right; }
+.game-logo { color: #fff; font-size: 14px; font-weight: 800; letter-spacing: 2px; }
+.page-subtitle { color: #edd6ad; font-size: 10px; letter-spacing: 3px; }
+
+.inventory-wrapper {
+    width: 100%; min-height: 100vh;
+    padding-top: 100px; padding-bottom: 40px;
+    display: flex; justify-content: center;
+}
+
+.inventory-box {
+    width: 90%; max-width: 1100px;
+    background: rgba(18, 20, 26, 0.75);
+    border: 1px solid rgba(237, 214, 173, 0.2);
+    border-radius: 15px; padding: 30px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(3px);
+}
+
+.item-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 130px);
+    gap: 20px; justify-content: center;
+}
+
+.item-card {
+    width: 130px; height: 165px;
+    background: #2a2d36;
+    border-radius: 12px 12px 4px 4px;
+    overflow: hidden; display: flex; flex-direction: column;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+    transition: 0.2s; cursor: pointer;
+}
+
+.item-card:hover { transform: translateY(-5px); }
+
+.item-icon-wrap {
+    width: 100%; height: 115px;
+    display: flex; justify-content: center; align-items: center;
+}
+
+.item-icon-wrap img { width: 85%; height: 85%; object-fit: contain; }
+
+.rarity-5 .item-icon-wrap { background: linear-gradient(#bd6c28, #e0a353); }
+.rarity-4 .item-icon-wrap { background: linear-gradient(#5d4f82, #9a73bb); }
+.rarity-2 .item-icon-wrap { background: linear-gradient(#395f69, #5aa1b0); }
+
+.item-info {
+    width: 100%; height: 50px;
+    background: #e9e5dc;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+}
+
+.item-name { color: #313131; font-size: 11px; font-weight: 700; }
+.item-count { color: #7f7f7f; font-size: 10px; font-weight: bold; }
