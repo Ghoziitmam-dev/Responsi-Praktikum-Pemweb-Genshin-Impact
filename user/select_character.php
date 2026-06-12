@@ -1,77 +1,61 @@
 <?php
 session_start();
- require_once '../config/config.php'; // Uncomment baris ini dan pastikan file koneksi DB Anda sesuai
+require_once '../config/config.php';
 
-// Redirect jika belum login
 if (!isset($_SESSION['user_id'])) {
-    header("Location: ../index.php");
+    header("Location: ../LoginPage/login.php");
     exit;
 }
 
 $user_id = $_SESSION['user_id'];
 
-// Proses jika form disubmit
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['character_id'])) {
-    $character_id = intval($_POST['character_id']);
-    
-    // Ambil nama karakter untuk disimpan di session (Opsional, tapi mempermudah UI)
-     $stmt = $conn->prepare("SELECT name FROM characters WHERE id = ?");
-     $stmt->bind_param("i", $character_id);
-     $stmt->execute();
-     $result = $stmt->get_result();
-     $char_data = $result->fetch_assoc();
-     $character_name = $char_data['name'];
+// JIKA TOMBOL SUBMIT DITEKAN
+if (isset($_POST['submit_karakter'])) {
+    $karakter_pilihan_id = $_POST['character_id'];
 
-    // Update data user di database (Contoh query)
-     $stmt = $conn->prepare("UPDATE users SET selected_character_id = ? WHERE id = ?");
-     $stmt->bind_param("ii", $character_id, $user_id);
-     if($stmt->execute()) {
-        // Simulasi jika berhasil update database
-        $_SESSION['character_id'] = $character_id;
-        $_SESSION['character_name'] = "Karakter Pilihan"; // Ganti dengan $character_name dari DB
-        
+    // Masukkan user_id dan character_id ke tabel user_character
+    $insert_stmt = $conn->prepare("INSERT INTO user_character (user_id, character_id) VALUES (?, ?)");
+    $insert_stmt->bind_param("ii", $user_id, $karakter_pilihan_id);
+    
+    if ($insert_stmt->execute()) {
+        $_SESSION['character_id'] = $karakter_pilihan_id;
         header("Location: dashboard.php");
-        exit;
-     }
+        exit();
+    } else {
+        $error = "Gagal menyimpan karakter: " . $conn->error;
+    }
+    $insert_stmt->close();
 }
 
-// Ambil daftar karakter dari database (Contoh Dummy Data untuk UI jika DB belum siap)
-// $result = $conn->query("SELECT * FROM characters");
-$characters = [
-    ['id' => 1, 'name' => 'Aether (Male Traveler)', 'element' => 'Anemo'],
-    ['id' => 2, 'name' => 'Lumine (Female Traveler)', 'element' => 'Anemo']
-];
+// AMBIL DAFTAR KARAKTER DARI DATABASE (Sesuaikan nama tabel karakternya, misal 'characters')
+// Jika nama tabel karaktermu berbeda, ganti tulisan 'characters' di bawah ini
+$query_karakter = "SELECT id, name FROM characters"; 
+$hasil_karakter = $conn->query($query_karakter);
 ?>
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Pilih Karakter - Genshin Impact</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <style>
-        .character-card {
-            border: 1px solid #ccc; padding: 10px; margin: 10px; display: inline-block; cursor: pointer;
-        }
-        .character-card:hover { border-color: gold; }
-    </style>
+    <meta charset="UTF-8">
+    <title>Pilih Karakter</title>
 </head>
 <body>
-
-<h1>Pilih Karakter Utama Anda</h1>
-<p>Setiap perjalanan dimulai dengan satu langkah. Siapakah yang akan menjelajahi Teyvat?</p>
-
-<form method="POST" action="">
-    <?php foreach ($characters as $char): // Ganti $characters dengan $result jika pakai DB ?>
-        <label class="character-card">
-            <!-- Gambar bisa ditambahkan di sini: <img src="<?= $char['image_url'] ?>" width="100"> -->
-            <input type="radio" name="character_id" value="<?= $char['id']; ?>" required>
-            <strong><?= htmlspecialchars($char['name']); ?></strong><br>
-            Elemen: <?= htmlspecialchars($char['element']); ?>
-        </label>
-    <?php endforeach; ?>
+    <h2>Pilih Karakter Genshin Impact Kamu</h2>
     
-    <br><br>
-    <button type="submit">Mulai Petualangan</button>
-</form>
+    <?php if (isset($error)) echo "<p style='color:red;'>$error</p>"; ?>
 
+    <form action="" method="POST">
+        <?php while($row = $hasil_karakter->fetch_assoc()): ?>
+            <div>
+                <input type="radio" id="char_<?php echo $row['id']; ?>" name="character_id" value="<?php echo $row['id']; ?>" required>
+                <label for="char_<?php echo $row['id']; ?>">
+                    <?php echo htmlspecialchars($row['name']); ?>
+                </label>
+            </div>
+        <?php endwhile; ?>
+        
+        <br>
+        <button type="submit" name="submit_karakter">Konfirmasi Pilihan</button>
+    </form>
 </body>
 </html>

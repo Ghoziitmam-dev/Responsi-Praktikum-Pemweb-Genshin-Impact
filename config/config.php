@@ -3,7 +3,7 @@
 $host = 'localhost';
 $user = 'root';
 $pass = '';
-$dbname = 'genshin_db'; // Sesuaikan dengan nama database Anda
+$dbname = 'genshin_fanbase'; 
 
 $conn = new mysqli($host, $user, $pass, $dbname);
 

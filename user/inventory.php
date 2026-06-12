@@ -9,22 +9,28 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Query untuk mengambil data inventory beserta detail itemnya
- $sql = "SELECT i.name, i.type, i.rarity, ui.quantity 
-         FROM user_inventory ui 
-         JOIN items i ON ui.item_id = i.id 
-         WHERE ui.user_id = ?";
-        
- $stmt = $conn->prepare($sql);
- $stmt->bind_param("i", $user_id);
- $stmt->execute();
- $inventory_items = $stmt->get_result();
+$sql = "
+    SELECT inv.quantity, itm.item_name, itm.item_type, itm.image, itm.rarity 
+    FROM inventory inv 
+    JOIN items itm ON inv.item_id = itm.id 
+    WHERE inv.user_id = ?
+";
+$stmt = $conn->prepare($sql);
 
-// Simulasi data agar halaman bisa dilihat sebelum DB tersambung
-$inventory_items = [
-    ['name' => 'Dull Blade', 'type' => 'Weapon', 'rarity' => 'Common', 'quantity' => 12],
-    ['name' => 'Wolf\'s Gravestone', 'type' => 'Weapon', 'rarity' => 'Legendary', 'quantity' => 1]
-];
+if (!$stmt) {
+    die("Error Query Inventory: " . $conn->error);
+}
+
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result_inventory = $stmt->get_result();
+
+// 2. MASUKKAN HASILNYA KE DALAM VARIABEL $inventory_items
+$inventory_items = [];
+while ($row = $result_inventory->fetch_assoc()) {
+    $inventory_items[] = $row;
+}
+$stmt->close();
 ?>
 <!DOCTYPE html>
 <html>
@@ -54,7 +60,12 @@ $inventory_items = [
     <tbody>
         <?php foreach ($inventory_items as $row): // Ganti dengan foreach ($inventory_items as $row) dari DB ?>
             <tr>
-                <td><?= htmlspecialchars($row['name']); ?></td>
+                <td><?= htmlspecialchars($row['item_name']); ?></td>
+                <td>
+                    <img src="../image/<?php echo htmlspecialchars($item['image']); ?>" 
+                        alt="Gambar Item" 
+                        style="width: 50px; height: 50px; object-fit: contain;">
+                </td>
                 <td><?= htmlspecialchars($row['type'] ?? '-'); ?></td>
                 <td><?= htmlspecialchars($row['rarity']); ?></td>
                 <td><?= htmlspecialchars($row['quantity']); ?></td>

@@ -1,25 +1,37 @@
 <?php
 session_start();
+require_once '../config/config.php';
 
 // Cek apakah user sudah login
 if (!isset($_SESSION['user_id'])) {
-    header("Location: ../index.php");
+    header("Location: ../LoginPage/login.php");
     exit;
 }
 
-// Cegah admin masuk ke dashboard user biasa (opsional, jika ingin dipisah total)
-if ($_SESSION['role'] == 'admin') {
-    header("Location: ../admin/dashbord.php");
+// Cegah admin masuk ke dashboard user biasa
+if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+    header("Location: ../admin/dashboard.php");
     exit;
 }
 
-// Cek apakah user sudah memilih karakter
-// Asumsi: Saat login atau pilih karakter, Anda menyimpan 'character_id' di session
-if (!isset($_SESSION['character_id']) || empty($_SESSION['character_id'])) {
-    // Jika belum pilih karakter, paksa ke halaman pemilihan karakter
+$user_id = $_SESSION['user_id'];
+
+// Mengecek apakah user ini sudah ada di tabel user_character
+$stmt = $conn->prepare("SELECT character_id FROM user_character WHERE user_id = ?");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+// Jika hasilnya 0 baris (berarti belum pernah pilih karakter)
+if ($result->num_rows === 0) {
     header("Location: select_character.php");
     exit;
+} else {
+    // Jika sudah punya, ambil ID karakternya dan simpan di session
+    $user_data = $result->fetch_assoc();
+    $_SESSION['character_id'] = $user_data['character_id'];
 }
+$stmt->close();
 ?>
 
 <!DOCTYPE html>
