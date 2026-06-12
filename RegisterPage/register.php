@@ -1,3 +1,43 @@
+<?php
+// 1. Koneksi Database
+session_start();
+require_once '../config/config.php'; // Pastikan path ke config benar
+
+$error_message = "";
+$success_message = "";
+
+// 2. Proses jika form disubmit
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username = trim($_POST['username'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? '';
+    $confirm_password = $_POST['confirm_password'] ?? '';
+
+    // Cek apakah password cocok
+    if ($password !== $confirm_password) {
+        $error_message = "Password dan Konfirmasi Password tidak cocok!";
+    } else {
+        // Enkripsi password
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        $role = 'user';
+
+        // 3. Masukkan ke Database
+        // Sesuaikan nama kolom (username, email, password, role) dengan tabelmu
+        $stmt = $conn->prepare("INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("ssss", $username, $email, $hashed_password, $role);
+
+        try {
+            if ($stmt->execute()) {
+                $success_message = "Registrasi berhasil! Silakan <a href='login.php'>Login</a>.";
+            }
+        } catch (mysqli_sql_exception $e) {
+            $error_message = "Gagal mendaftar: Username atau Email mungkin sudah terdaftar.";
+        }
+        $stmt->close();
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
