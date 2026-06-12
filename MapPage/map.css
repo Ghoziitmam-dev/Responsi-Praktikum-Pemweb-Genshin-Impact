@@ -1,0 +1,86 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #050b14;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    user-select: none;
+}
+
+.map-wrapper {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    cursor: grab;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.map-wrapper:active {
+    cursor: grabbing;
+}
+
+.map-image {
+    max-width: none;
+    max-height: none;
+    position: absolute;
+    transform-origin: center center;
+    transition: transform 0.1s ease-out;
+}
+
+.controls {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 10;
+}
+
+.btn {
+    width: 45px;
+    height: 45px;
+    border-radius: 8px;
+    background: rgba(12, 24, 41, 0.85);
+    border: 1px solid #4a596e;
+    color: #ece5d8;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+.btn:hover {
+    background: #1c324d;
+    border-color: #cca46a;
+    color: #cca46a;
+    transform: scale(1.05);
+}
+
+.btn:active {
+    transform: scale(0.95);
+}
+
+.game-border {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 2px solid rgba(204, 164, 106, 0.2);
+    pointer-events: none;
+    z-index: 5;
+}
